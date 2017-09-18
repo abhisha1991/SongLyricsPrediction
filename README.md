@@ -14,3 +14,15 @@ We first attempt to predict 10 (configurable) sentences of some words each (we t
 This is done using a basic RNN trained on SGD. The results are not impressive as RNNs cannot derive context from the past too well.
 The next attempt is to use LSTMs.
 
+## Dependencies
+1. nltk
+2. numpy
+3. pandas
+4. install punkt from nltk models - one time only
+
+## Sample usage
+Simply clone the repo and run **python main.py**
+
+## Credits
+The credits of this hugely go to the tutorial that was made by Denny Britz - https://github.com/dennybritz/rnn-tutorial-rnnlm and his blog
+http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-2-implementing-a-language-model-rnn-with-python-numpy-and-theano/
