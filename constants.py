@@ -7,3 +7,5 @@ class Constants(object):
         self.sentence_start_token = "SENTENCE_START"
         self.sentence_end_token = "SENTENCE_END"
         self.datapath = 'songlyrics/songdata.csv'
+        self.num_sentences = 10
+        self.sentence_min_length = 7

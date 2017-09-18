@@ -60,13 +60,10 @@ if __name__ == '__main__':
     model = RNNNumpy(c.vocabulary_size, 50)
     losses = train_with_sgd(model, X_train[:100], y_train[:100], nepoch=10, evaluate_loss_after=1)
 
-    num_sentences = 10
-    sentence_min_length = 7
-
-    for i in range(num_sentences):
+    for i in range(c.num_sentences):
         sent = []
         # We want long sentences, not sentences with one or two words
-        while len(sent) < sentence_min_length:
+        while len(sent) < c.sentence_min_length:
             sent = generate_sentence(model)
         print(sent)
 
