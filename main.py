@@ -9,11 +9,14 @@ c = Constants()
 
 
 def generate_sentence(model):
-    # We start the sentence with the start token
+    # Start with a start token
     new_sentence = [lp.word_to_index[c.sentence_start_token]]
-    # Repeat until we get an end token
+
+    # limits to break out of potential infinite loop
     count_inner = 0
     count_outer = 0
+
+    # Repeat until we get an end token
     while not new_sentence[-1] == lp.word_to_index[c.sentence_end_token]:
         o, s = model.forward_propagation(new_sentence)
         sampled_word = lp.word_to_index[c.unknown_token]
@@ -30,13 +33,13 @@ def generate_sentence(model):
             if count_inner == 20:
                 break
         new_sentence.append(sampled_word)
-    sentence_str = [lp.index_to_word[x] for x in new_sentence[1:-1]] # exclude start and end tokens
+    sentence_str = [lp.index_to_word[x] for x in new_sentence[1:-1]]  # exclude start and end tokens in the final string
     return sentence_str
 
 
 if __name__ == '__main__':
 
-    # Basic RNN without training
+    # Basic RNN without training on a single observation of the training set
     np.random.seed(10)
     model = RNNNumpy(c.vocabulary_size, c.hidden_layer_size)
     o, s = model.forward_propagation(X_train[10])
@@ -47,13 +50,13 @@ if __name__ == '__main__':
     print(predictions.shape)
     print(predictions)
 
+    # A side note, the losses should be of the same order
     print("Expected Loss for random predictions: %f" % np.log(c.vocabulary_size))
     print("Actual loss: %f" % model.calculate_loss(X_train[:1000], y_train[:1000]))
 
-    # Basic RNN with training
+    # Basic RNN with training on first n observations
     model = None
     np.random.seed(10)
-    # Train on a small subset of the data to see what happens
     model = RNNNumpy(c.vocabulary_size, 50)
     losses = train_with_sgd(model, X_train[:100], y_train[:100], nepoch=10, evaluate_loss_after=1)
 
