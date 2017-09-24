@@ -10,7 +10,7 @@ class RNNNumpy:
 
         # U = incoming weights -- dim = hidden_dim x word_dim
         # V = outgoing weights -- dim = word_dim x hidden_dim
-        # W = outgoing weights which feed back into the hidden layer -- dim == hidden_dim x hidden_dim
+        # W = outgoing weights which feed back into the hidden layer -- dim = hidden_dim x hidden_dim
         # St = output at time t from hidden unit -- dim = hidden_dim x 1
         # Xt = input at time t (= St-1) -- dim = word_dim x 1
         # Ot = output of that layer --dim = word_dim x 1
