@@ -12,35 +12,17 @@ import os
 c = Constants()
 
 
-def lstm_lyrics_generator(sentence_list):
-    # load ascii text
-    raw_text = ''
-    for x in sentence_list:
-        raw_text = raw_text + ''.join(x) + '.'
+def lstm_lyrics_generator(raw_text, dataX, dataY):
 
-    # take the first n characters of the entire corpus
-    raw_text = raw_text[:1000000]
-
-    # create mapping of unique chars to integers, and a reverse mapping
     chars = sorted(list(set(raw_text)))
-    char_to_int = dict((ch, i) for i, ch in enumerate(chars))
-    int_to_char = dict((i, ch) for i, ch in enumerate(chars))
-
-    # summarize the loaded data
     n_chars = len(raw_text)
     n_vocab = len(chars)
+    n_patterns = len(dataX)
+    int_to_char = dict((i, ch) for i, ch in enumerate(chars))
+
+    # summarize data
     print("Total Characters: ", n_chars)
     print("Total Vocab: ", n_vocab)
-
-    # prepare the dataset of input to output pairs encoded as integers
-    dataX = []
-    dataY = []
-    for i in range(0, n_chars - c.lstm_seq_length, 1):
-        seq_in = raw_text[i:i + c.lstm_seq_length]
-        seq_out = raw_text[i + c.lstm_seq_length]
-        dataX.append([char_to_int[char] for char in seq_in])
-        dataY.append(char_to_int[seq_out])
-    n_patterns = len(dataX)
     print("Total Patterns: ", n_patterns)
 
     # reshape X to be [samples, time steps, features]
@@ -52,7 +34,7 @@ def lstm_lyrics_generator(sentence_list):
     # one hot encode the output variable
     y = np_utils.to_categorical(dataY)
 
-    # define the LSTM model
+    # define the lstm model
     model = Sequential()
     model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2]), return_sequences=True))
     model.add(Dropout(0.2))
@@ -80,12 +62,12 @@ def lstm_lyrics_generator(sentence_list):
     print("\"", ''.join([int_to_char[value] for value in pattern]), "\"")
 
     # store result in a file
-    resultfile = "songlyrics/result_lyrics.txt"
+    result_file = "songlyrics/result_lyrics.txt"
     try:
-        os.remove(resultfile)
+        os.remove(result_file)
     except OSError:
         pass
-    f = open(resultfile, 'w')
+    f = open(result_file, 'w')
 
     # generate characters
     for i in range(1000):
@@ -94,7 +76,6 @@ def lstm_lyrics_generator(sentence_list):
         prediction = model.predict(x, verbose=0)
         index = numpy.argmax(prediction)
         result = int_to_char[index]
-        seq_in = [int_to_char[value] for value in pattern]
         sys.stdout.write(result)
         f.write(result)
         pattern.append(index)

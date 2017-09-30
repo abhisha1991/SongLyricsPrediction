@@ -39,7 +39,30 @@ class LyricsParser(object):
         return sentences
 
     def generate_training_data_lstm(self):
-        return self.training_sentences, None
+        raw_text = ''
+        for x in self.training_sentences:
+            raw_text = raw_text + ''.join(x) + '.'
+
+        # take the first n characters of the entire corpus
+        raw_text = raw_text[:self.c.training_size]
+
+        # create mapping of unique chars to integers
+        chars = sorted(list(set(raw_text)))
+        char_to_int = dict((ch, i) for i, ch in enumerate(chars))
+
+        # summarize the loaded data
+        n_chars = len(raw_text)
+
+        # prepare the data set of input to output pairs encoded as integers
+        dataX = []
+        dataY = []
+        for i in range(0, n_chars - self.c.lstm_seq_length, 1):
+            seq_in = raw_text[i:i + self.c.lstm_seq_length]
+            seq_out = raw_text[i + self.c.lstm_seq_length]
+            dataX.append([char_to_int[char] for char in seq_in])
+            dataY.append(char_to_int[seq_out])
+
+        return raw_text, dataX, dataY
 
     def generate_training_data_rnn(self):
         # Count the word frequencies

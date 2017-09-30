@@ -40,8 +40,8 @@ def generate_sentence(model):
 if __name__ == '__main__':
 
     print("Starting LSTM lyrics generation")
-    X_train, y_train = lp.parse_lyrics(c.mode_lstm)
-    lstm_lyrics_generator(X_train)
+    raw_text, dataX, dataY = lp.parse_lyrics(c.mode_lstm)
+    lstm_lyrics_generator(raw_text, dataX, dataY)
 
     # Basic RNN without training on a single observation of the training set
     np.random.seed(10)
