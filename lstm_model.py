@@ -76,6 +76,14 @@ def lstm_lyrics_generator(X_train):
     print("Seed:")
     print("\"", ''.join([int_to_char[value] for value in pattern]), "\"")
 
+    # store result in a file
+    resultfile = "songlyrics/result_lyrics.txt"
+    try:
+        numpy.os.remove(resultfile)
+    except OSError:
+        pass
+    f = open(resultfile, 'w')
+
     # generate characters
     for i in range(1000):
         x = numpy.reshape(pattern, (1, len(pattern), 1))
@@ -85,7 +93,9 @@ def lstm_lyrics_generator(X_train):
         result = int_to_char[index]
         seq_in = [int_to_char[value] for value in pattern]
         sys.stdout.write(result)
+        f.write(result)
         pattern.append(index)
         pattern = pattern[1:len(pattern)]
 
-    print("\nFinished LSTM lyrics generation")
+    f.close()
+print("\nFinished LSTM lyrics generation")
