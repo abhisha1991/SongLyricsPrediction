@@ -12,13 +12,15 @@ import os
 c = Constants()
 
 
-def lstm_lyrics_generator(X_train):
+def lstm_lyrics_generator(sentence_list):
     # load ascii text
     raw_text = ''
-    for x in X_train:
+    for x in sentence_list:
         raw_text = raw_text + ''.join(x) + '.'
 
+    # take the first n characters of the entire corpus
     raw_text = raw_text[:1000000]
+
     # create mapping of unique chars to integers, and a reverse mapping
     chars = sorted(list(set(raw_text)))
     char_to_int = dict((ch, i) for i, ch in enumerate(chars))
