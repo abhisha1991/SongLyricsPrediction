@@ -8,4 +8,7 @@ class Constants(object):
         self.sentence_end_token = "SENTENCE_END"
         self.datapath = 'songlyrics/songdata.csv'
         self.num_sentences = 10
+        self.mode_lstm = 'lstm'
+        self.mode_rnn = 'simple_rnn'
         self.sentence_min_length = 7
+        self.lstm_seq_length = 100

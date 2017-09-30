@@ -12,12 +12,13 @@ class LyricsParser(object):
     def __init__(self):
         self.c = Constants()
         self.all_sentences = []
+        self.training_sentences = []
         self.tokenized_sentences = []
         self.index_to_word = []
         self.word_to_index = dict()
         self.vocab = []
 
-    def get_sentences(self):
+    def get_sentences(self, mode):
         df = pd.read_csv(self.c.datapath)
         song_lyrics = df['text']
         print("Reading CSV file...")
@@ -27,23 +28,20 @@ class LyricsParser(object):
             for sent in row.split('\n'):
                 sent = sent.strip(' ')
                 # Split full song lyrics into sentences
-                sentence = ''.join(nltk.sent_tokenize(sent))
-                # Append SENTENCE_START and SENTENCE_END
-                sentences.append("%s %s %s" % (self.c.sentence_start_token, sentence, self.c.sentence_end_token))
-                # print(sentences)
+                sentence = ''.join(nltk.sent_tokenize(sent.lower()))
+                if mode == self.c.mode_rnn:
+                    # Append SENTENCE_START and SENTENCE_END
+                    sentences.append(self.c.sentence_start_token + " " + sentence + " " + self.c.sentence_end_token)
+                    # print(sentences)
+                elif mode == self.c.mode_lstm:
+                    sentences.append(sentence)
+
         return sentences
 
-    def parse_lyrics(self):
-        self.all_sentences = self.get_sentences()
-        # There are 2427716 sentences separated by '\n', we are choosing 100,000 random sentences
-        training_sentences = random.sample(self.all_sentences, self.c.training_size)
-        print("Number of sentences parsed: ", (len(self.all_sentences)))
+    def generate_training_data_lstm(self):
+        return self.training_sentences, None
 
-        # Tokenize the sentences into words
-        for sent in training_sentences:
-            x = nltk.word_tokenize(sent)
-            self.tokenized_sentences.append(x)
-
+    def generate_training_data_rnn(self):
         # Count the word frequencies
         word_freq = nltk.FreqDist(itertools.chain(*self.tokenized_sentences))
         print("Number of unique words found: ", len(word_freq.items()))
@@ -56,14 +54,11 @@ class LyricsParser(object):
 
         print("Vocabulary size is fixed to ", self.c.vocabulary_size, " words")
         print("The least frequent word in our vocabulary is: ", (vocab[-1][0], vocab[-1][1]))
-        print("The most frequent word in our vocabulary is '%s' and appeared %d times." % (vocab[0][0], vocab[0][1]))
+        print("The most frequent word in our vocabulary is:", (vocab[0][0], vocab[0][1]))
 
         # Replace all words not in our vocabulary with the unknown token
         for i, sent in enumerate(self.tokenized_sentences):
             self.tokenized_sentences[i] = [w if w in self.word_to_index else self.c.unknown_token for w in sent]
-
-        print("\nExample sentence: '%s'" % training_sentences[0])
-        print("\nExample sentence after Pre-processing: '%s'" % self.tokenized_sentences[0])
 
         '''
         # Create the training data
@@ -80,5 +75,25 @@ class LyricsParser(object):
 
         return X_train, y_train
 
+    def parse_lyrics(self, mode='simple_rnn'):
+        self.all_sentences = self.get_sentences(mode)
+        print("Number of sentences parsed: ", (len(self.all_sentences)))
+        print("Sampling a subset of these, sample size: ", self.c.training_size)
 
+        # There are 2427716 sentences separated by '\n', we are choosing 100,000 random sentences
+        self.training_sentences = random.sample(self.all_sentences, self.c.training_size)
+
+        # Tokenize the sentences into words
+        for sent in self.training_sentences:
+            x = nltk.word_tokenize(sent)
+            self.tokenized_sentences.append(x)
+
+        print("\nExample sentence: ", self.training_sentences[0])
+        print("\nExample sentence after Pre-processing: ", self.tokenized_sentences[0])
+
+        if mode == self.c.mode_rnn:
+            return self.generate_training_data_rnn()
+
+        elif mode == self.c.mode_lstm:
+            return self.generate_training_data_lstm()
 

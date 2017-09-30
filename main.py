@@ -2,10 +2,10 @@ from SongLyricsPrediction.lyrics_parser import *
 from SongLyricsPrediction.models import *
 from SongLyricsPrediction.constants import *
 from SongLyricsPrediction.utils import *
+from SongLyricsPrediction.lstm import *
 
-lp = LyricsParser()
-X_train, y_train = lp.parse_lyrics()
 c = Constants()
+lp = LyricsParser()
 
 
 def generate_sentence(model):
@@ -39,9 +39,14 @@ def generate_sentence(model):
 
 if __name__ == '__main__':
 
+    print("Starting LSTM lyrics generation")
+    X_train, y_train = lp.parse_lyrics(c.mode_lstm)
+    lstm_lyrics_generator(X_train)
+
     # Basic RNN without training on a single observation of the training set
     np.random.seed(10)
     model = RNNNumpy(c.vocabulary_size, c.hidden_layer_size)
+    X_train, y_train = lp.parse_lyrics(c.mode_rnn)
     o, s = model.forward_propagation(X_train[10])
     print(len(X_train[10]))
     print(o.shape)
