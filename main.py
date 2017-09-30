@@ -1,8 +1,8 @@
 from SongLyricsPrediction.lyrics_parser import *
-from SongLyricsPrediction.models import *
+from SongLyricsPrediction.rnn_model import *
 from SongLyricsPrediction.constants import *
 from SongLyricsPrediction.utils import *
-from SongLyricsPrediction.lstm import *
+from SongLyricsPrediction.lstm_model import *
 
 c = Constants()
 lp = LyricsParser()
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     # Basic RNN without training on a single observation of the training set
     np.random.seed(10)
-    model = RNNNumpy(c.vocabulary_size, c.hidden_layer_size)
+    model = SimpleRNN(c.vocabulary_size, c.hidden_layer_size)
     X_train, y_train = lp.parse_lyrics(c.mode_rnn)
     o, s = model.forward_propagation(X_train[10])
     print(len(X_train[10]))
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # Basic RNN with training on first n observations
     model = None
     np.random.seed(10)
-    model = RNNNumpy(c.vocabulary_size, 50)
+    model = SimpleRNN(c.vocabulary_size, 50)
     losses = train_with_sgd(model, X_train[:100], y_train[:100], nepoch=10, evaluate_loss_after=1)
 
     for i in range(c.num_sentences):

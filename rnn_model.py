@@ -1,7 +1,7 @@
 from SongLyricsPrediction.utils import *
 
 
-class RNNNumpy:
+class SimpleRNN:
     def __init__(self, word_dim, hidden_dim, bptt_truncate=4):
         # Assign instance variables
         self.word_dim = word_dim  # size of vocab
