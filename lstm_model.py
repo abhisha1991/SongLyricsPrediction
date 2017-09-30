@@ -7,6 +7,7 @@ from keras.layers import LSTM
 from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
 from SongLyricsPrediction.constants import *
+import os
 
 c = Constants()
 
@@ -79,7 +80,7 @@ def lstm_lyrics_generator(X_train):
     # store result in a file
     resultfile = "songlyrics/result_lyrics.txt"
     try:
-        numpy.os.remove(resultfile)
+        os.remove(resultfile)
     except OSError:
         pass
     f = open(resultfile, 'w')
@@ -98,4 +99,4 @@ def lstm_lyrics_generator(X_train):
         pattern = pattern[1:len(pattern)]
 
     f.close()
-print("\nFinished LSTM lyrics generation")
+    print("\nFinished LSTM lyrics generation")
